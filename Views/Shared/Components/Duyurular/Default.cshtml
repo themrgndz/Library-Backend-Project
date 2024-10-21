@@ -1,0 +1,33 @@
+<style>
+   #kart{
+        max-width: 400px;
+        background-color: #212121;
+    }
+</style>
+<div class="d-none">
+@model List<Duyuru>
+
+
+
+
+</div>
+    <div class="text-center">
+        @foreach (var duyuru in Model)
+        {
+            <div class="col-12 my-4 text-center">
+                <div class="card mb-2 shadow" id="kart">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">@duyuru.Baslik</h5>
+                        <hr>
+                        <p class="card-text text-center">@duyuru.Ozet</p>
+                        <div class="row">
+                            
+                            <div class="col-12 text-center">
+                                <a href="/Home/Index/@duyuru.DuyuruId" class="btn btn-primary">Detaylar</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>

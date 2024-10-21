@@ -1,0 +1,42 @@
+@model List<Duyuru>
+
+@{
+    Layout = "_Layout";
+}
+
+<div class="container text-center">
+    <h1 class="m-2 p-2"><strong>- Duyurular -</strong></h1>
+    <div class="text-center mx-auto" style="width: 600px;">
+        @foreach (var duyuru in Model)
+        {
+            <div class="col-12 my-4 text-center">
+                <div class="card mb-2 shadow" id="kart">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">@duyuru.Baslik</h5>
+                        <hr>
+                        <p class="card-text text-center">@duyuru.Ozet</p>
+                        <hr>    
+                        <div class="row">
+                            
+                            <div class="col-3 mx-auto">
+                                <a href="/admin/Duzen/@duyuru.DuyuruId" class="btn btn-primary text-center">Düzenle</a>
+                            </div>
+
+                            <div class="col-3 mx-auto">
+                                <a href="/admin/Duyurular/Create" class="btn btn-primary btn-danger">Yeni</a>
+                            </div>
+                            
+                            <div class="col-3 mx-auto">
+                                <form method="POST" action="/admin/Duyurular" style="display: inline;">
+                                    <input type="hidden" name="DuyuruId">
+                                    <button type="submit" class="btn btn-primary">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+

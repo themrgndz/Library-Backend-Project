@@ -1,0 +1,32 @@
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model Duyuru
+@{
+    Layout = "_Layout";
+}
+
+<div class="p-4">
+    <form method="POST">
+        <div class="form-group">
+            <label for="DuyuruId">Id</label>
+            <input asp-for = "DuyuruId" value="@Model.DuyuruId" class="form-control">
+        </div>
+
+        <div class="form-group">
+            <label for="Baslik">Baslik</label>
+            <input asp-for = "Baslik" value="@Model.Baslik" class="form-control">
+        </div>
+
+        <div class="form-group">
+            <label for="Ozet">Ozet</label>
+            <input asp-for = "Ozet" value="@Model.Ozet" class="form-control">
+        </div>
+
+        <div class="form-group">
+            <label for="Icerik">Icerik</label>
+            @Html.TextArea("Icerik",@Model.Icerik,20,10,new{@class = "form-control"})
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Gönder</button>
+    </form>
+</div>
+
