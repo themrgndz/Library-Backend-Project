@@ -25,7 +25,7 @@ namespace WebVize.Data
                     Category = "Fiction", 
                     ISBN = "9780316769488", 
                     Stock = 5, 
-                    ImageUrl = "/img/catcher.jpg", 
+                    ImageUrl = "https://marketplace.canva.com/EAFQE7XNmsw/1/0/1003w/canva-lacivert-minimalist-kelebek-uç-kitap-kapağı-tpBdl9y5rlw.jpg", 
                     Description = "A story about teenage rebellion and angst."
                 },
                 new Books()
@@ -39,7 +39,7 @@ namespace WebVize.Data
                     Category = "Fiction", 
                     ISBN = "9780060935467", 
                     Stock = 3, 
-                    ImageUrl = "/img/mockingbird.jpg", 
+                    ImageUrl = "https://marketplace.canva.com/EAFH1JlujwI/2/0/1003w/canva-yeşil-sade-gizemli-orman-fotoğraflı-roman-kitap-kapağı-mfPVe9UxMO0.jpg", 
                     Description = "A novel about the serious issues of rape and racial inequality."
                 },
                 new Books()
@@ -53,7 +53,7 @@ namespace WebVize.Data
                     Category = "Dystopian", 
                     ISBN = "9780451524935", 
                     Stock = 7, 
-                    ImageUrl = "/img/1984.jpg", 
+                    ImageUrl = "https://marketplace.canva.com/EAEe1W_Hods/1/0/1024w/canva-tek-renkli-gerilim-wattpad-kapağı-Wcatv-Oosb0.jpg", 
                     Description = "A dystopian novel set in a totalitarian society."
                 }
             };

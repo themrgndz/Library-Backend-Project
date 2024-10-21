@@ -1,13 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using WebVize.Models;
 
 namespace WebVize
 {
@@ -23,6 +22,20 @@ namespace WebVize
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+
+            // CORS ayarlarını ekle
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllOrigins", builder =>
+                {
+                    builder.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                });
+            });
+
+            services.AddDbContext<BookContext>(options =>
+            options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -36,37 +49,23 @@ namespace WebVize
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
+            
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            app.UseCors("AllowAllOrigins");
 
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
-                    name: "adminList", 
-                    pattern: "admin/Duyurular",
-                    defaults: new {controller="Admin",action="List"}
-                );
-
-                endpoints.MapControllerRoute(
-                    name: "adminCreate", 
-                    pattern: "admin/Duyurular/Create",
-                    defaults: new {controller="Admin",action="Create"}
-                );
-
-                endpoints.MapControllerRoute(
-                    name: "adminEdit", 
-                    pattern: "admin/Duyurular/{id?}",
-                    defaults: new {controller="Admin",action="Duzen"}
-                );
-
-                endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Book}/{action=List}/{id?}");
+                
+                endpoints.MapControllers();
             });
         }
     }
