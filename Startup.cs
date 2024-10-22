@@ -49,16 +49,11 @@ namespace WebVize
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
-            
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
             app.UseRouting();
-
             app.UseCors("AllowAllOrigins");
-
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

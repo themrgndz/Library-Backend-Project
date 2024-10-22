@@ -10,5 +10,7 @@ namespace WebVize.Models
         }
 
         public DbSet<Books> Books { get; set; }
+        public DbSet<FavoriteBooks> Favorites { get; set; }
+        public DbSet<BorrowedBooks> BorrowedBooks { get; set; }
     }
 }

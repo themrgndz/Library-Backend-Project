@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using WebVize.Data;
@@ -8,6 +9,7 @@ using WebVize.Models;
 
 namespace WebVize.Controllers
 {
+    
     [ApiController]
     [Route("api/[controller]")]
     public class BookController : ControllerBase
@@ -89,7 +91,7 @@ namespace WebVize.Controllers
             // Kullanıcının favori kitaplar listesine ekleme işlemi yapılacak
             // Kullanıcının kimliğini almak için bir sistem eklenebilir
 
-            var favorite = new Favorite 
+            var favorite = new FavoriteBooks
             {
                 BookId = request.BookId,
                 // UserId = request.UserId, // Kullanıcı kimliğini buraya ekleyin
@@ -102,7 +104,11 @@ namespace WebVize.Controllers
             _logger.LogInformation($"Book with ID {request.BookId} added to favorites.");
             return Ok(new { message = "Kitap favorilere eklendi." });
         }
-
+        [HttpOptions]
+        public IActionResult Options()
+        {
+            return Ok();
+        }
         // Kitap ödünç alma
         [HttpPost("borrow")]
         public async Task<IActionResult> BorrowBook([FromBody] BorrowRequest request)
@@ -110,7 +116,7 @@ namespace WebVize.Controllers
             // Kullanıcının ödünç aldığı kitaplar listesine ekleme işlemi yapılacak
             // Kullanıcının kimliğini almak için bir sistem eklenebilir
 
-            var borrowedBook = new BorrowedBook
+            var borrowedBook = new BorrowedBooks
             {
                 BookId = request.BookId,
                 // UserId = request.UserId, // Kullanıcı kimliğini buraya ekleyin
@@ -139,4 +145,5 @@ namespace WebVize.Controllers
     }
 
     // Favori ve Ödünç kitaplar için model tanımları yapılabilir.
+    
 }
