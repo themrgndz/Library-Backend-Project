@@ -10,7 +10,7 @@ using WebVize.Models;
 namespace WebVize.Migrations
 {
     [DbContext(typeof(BookContext))]
-    [Migration("20241024070754_InitialCreate")]
+    [Migration("20241024085655_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

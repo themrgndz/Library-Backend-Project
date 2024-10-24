@@ -88,9 +88,6 @@ namespace WebVize.Controllers
         [HttpPost("favorites")]
         public async Task<IActionResult> AddToFavorites([FromBody] FavoriteRequest request)
         {
-            // Kullanıcının favori kitaplar listesine ekleme işlemi yapılacak
-            // Kullanıcının kimliğini almak için bir sistem eklenebilir
-
             var favorite = new FavoriteBooks
             {
                 BookId = request.BookId,
@@ -113,9 +110,6 @@ namespace WebVize.Controllers
         [HttpPost("borrow")]
         public async Task<IActionResult> BorrowBook([FromBody] BorrowRequest request)
         {
-            // Kullanıcının ödünç aldığı kitaplar listesine ekleme işlemi yapılacak
-            // Kullanıcının kimliğini almak için bir sistem eklenebilir
-
             var borrowedBook = new BorrowedBooks
             {
                 BookId = request.BookId,
