@@ -1,143 +1,81 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using WebVize.Data;
-using WebVize.Models;
+using UzmLibrary.Models;
+using UzmLibrary.Services;
 
-namespace WebVize.Controllers
+[Route("api/[controller]")]
+[ApiController]
+public class BookController : ControllerBase
 {
-    
-    [ApiController]
-    [Route("api/[controller]")]
-    public class BookController : ControllerBase
+    private readonly IBookService _bookService;
+
+    public BookController(IBookService bookService)
     {
-        private readonly ILogger<BookController> _logger;
-        private readonly BookContext _context;
-
-        public BookController(ILogger<BookController> logger, BookContext context)
-        {
-            _logger = logger;
-            _context = context;
-        }
-
-        // Kitapların listelenmesi
-        [HttpGet]
-        public IActionResult GetBooks()
-        {
-            var books = _context.Books.AsNoTracking().ToList();
-            _logger.LogInformation("All books requested.");
-            return Ok(books);
-        }
-
-        // ID'ye göre tek bir kitabın alınması
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetBook(int id)
-        {
-            var book = await _context.Books.FindAsync(id); // AsNoTracking kaldırıldı
-            if (book == null)
-                return NotFound();
-
-            _logger.LogInformation($"Book with ID {id} requested.");
-            return Ok(book);
-        }
-
-        // Yeni bir kitap ekleme
-        [HttpPost]
-        public async Task<IActionResult> AddBook([FromBody] Books book)
-        {
-            await _context.Books.AddAsync(book);
-            await _context.SaveChangesAsync();
-            _logger.LogInformation("New book added.");
-            return CreatedAtAction(nameof(GetBook), new { id = book.Id }, book);
-        }
-
-        // Mevcut bir kitabı güncelleme
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBook(int id, [FromBody] Books updatedBook)
-        {
-            var book = await _context.Books.FindAsync(id); // AsNoTracking kaldırıldı
-            if (book == null)
-                return NotFound();
-
-            // Güncellenen değerleri al
-            _context.Entry(book).CurrentValues.SetValues(updatedBook);
-            await _context.SaveChangesAsync();
-
-            _logger.LogInformation($"Book with ID {id} updated.");
-            return NoContent();
-        }
-
-        // Bir kitabı silme
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBook(int id)
-        {
-            var book = await _context.Books.FindAsync(id);
-            if (book == null)
-                return NotFound();
-
-            _context.Books.Remove(book);
-            await _context.SaveChangesAsync();
-            _logger.LogInformation($"Book with ID {id} deleted.");
-            return NoContent();
-        }
-
-        // Favorilere ekleme
-        [HttpPost("favorites")]
-        public async Task<IActionResult> AddToFavorites([FromBody] FavoriteRequest request)
-        {
-            var favorite = new FavoriteBooks
-            {
-                BookId = request.BookId,
-                // UserId = request.UserId, // Kullanıcı kimliğini buraya ekleyin
-                AddedDate = DateTime.UtcNow
-            };
-
-            _context.Favorites.Add(favorite);
-            await _context.SaveChangesAsync();
-
-            _logger.LogInformation($"Book with ID {request.BookId} added to favorites.");
-            return Ok(new { message = "Kitap favorilere eklendi." });
-        }
-        [HttpOptions]
-        public IActionResult Options()
-        {
-            return Ok();
-        }
-        // Kitap ödünç alma
-        [HttpPost("borrow")]
-        public async Task<IActionResult> BorrowBook([FromBody] BorrowRequest request)
-        {
-            var borrowedBook = new BorrowedBooks
-            {
-                BookId = request.BookId,
-                // UserId = request.UserId, // Kullanıcı kimliğini buraya ekleyin
-                BorrowDate = DateTime.UtcNow,
-                // ReturnDate = null // İade tarihi yok
-            };
-
-            _context.BorrowedBooks.Add(borrowedBook);
-            await _context.SaveChangesAsync();
-
-            _logger.LogInformation($"Book with ID {request.BookId} borrowed.");
-            return Ok(new { message = "Kitap başarıyla ödünç alındı." });
-        }
+        _bookService = bookService;
     }
 
-    public class FavoriteRequest
+    // GET: api/book
+    // Retrieves all books
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Book>>> GetAllBooks()
     {
-        public int BookId { get; set; }
-        // public int UserId { get; set; } // Kullanıcı kimliği ekleyin
+        var books = await _bookService.GetAllBooksAsync();
+        return Ok(books);
     }
 
-    public class BorrowRequest
+    // GET: api/book/{id}
+    // Retrieves the book with the specified ID
+    [HttpGet("{id}")]
+    public async Task<ActionResult<Book>> GetBookById(int id)
     {
-        public int BookId { get; set; }
-        // public int UserId { get; set; } // Kullanıcı kimliği ekleyin
+        var book = await _bookService.GetBookByIdAsync(id);
+        if (book == null)
+        {
+            return NotFound();
+        }
+        return Ok(book);
     }
 
-    // Favori ve Ödünç kitaplar için model tanımları yapılabilir.
-    
+    // POST: api/book
+    // Creates a new book
+    [HttpPost]
+    public async Task<ActionResult<Book>> CreateBook(Book book)
+    {
+        if (ModelState.IsValid)
+        {
+            await _bookService.AddBookAsync(book);
+            return CreatedAtAction(nameof(GetBookById), new { id = book.BookId }, book);
+        }
+        return BadRequest(ModelState);
+    }
+
+    // PUT: api/book/{id}
+    // Updates the book with the specified ID
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateBook(int id, Book book)
+    {
+        if (id != book.BookId || !ModelState.IsValid)
+        {
+            return BadRequest();
+        }
+
+        await _bookService.UpdateBookAsync(book);
+        return NoContent();
+    }
+
+    // DELETE: api/book/{id}
+    // Deletes the book with the specified ID
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteBook(int id)
+    {
+        var book = await _bookService.GetBookByIdAsync(id);
+        if (book == null)
+        {
+            return NotFound();
+        }
+
+        await _bookService.DeleteBookAsync(id);
+        return NoContent();
+    }
 }

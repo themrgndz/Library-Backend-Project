@@ -1,12 +1,11 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using WebVize.Models;
+using UzmLibrary.Models;
+using UzmLibrary.Services;
 
 namespace WebVize
 {
@@ -34,8 +33,14 @@ namespace WebVize
                 });
             });
 
-            services.AddDbContext<BookContext>(options =>
-            options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<LibraryContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            // Repository ekle
+            services.AddScoped<IBookRepository, BookRepository>();
+
+            // Servis ekle
+            services.AddScoped<IBookService, BookService>(); // Bu satırı ekleyin
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

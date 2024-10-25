@@ -1,28 +1,52 @@
-using System;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using WebVize.Models;
+using UzmLibrary.Models;
 
-namespace WebVize.Data
+public class BookRepository : IBookRepository
 {
-    public class BookRepository
+    private readonly LibraryContext _context;
+
+    public BookRepository(LibraryContext context)
     {
-        private static List<Books> _books = null;
+        _context = context;
+    }
 
-        public static List<Books> Books
-        {
-            get { return _books; }
-        }
+    // Retrieves all books, including their authors and categories
+    public async Task<IEnumerable<Book>> GetAllBooksAsync()
+    {
+        return await _context.Books.Include(b => b.Author).Include(b => b.Category).ToListAsync();
+    }
 
-        public static void AddBook(Books book)
-        {
-            _books.Add(book);
-        }
+    // Retrieves the book with the specified ID, including its author and category
+    public async Task<Book> GetBookByIdAsync(int id)
+    {
+        return await _context.Books.Include(b => b.Author).Include(b => b.Category)
+            .FirstOrDefaultAsync(b => b.BookId == id);
+    }
 
-        public static Books GetBookByISBN(string isbn)
+    // Adds a new book to the database
+    public async Task AddBookAsync(Book book)
+    {
+        await _context.Books.AddAsync(book);
+        await _context.SaveChangesAsync();
+    }
+
+    // Updates the existing book in the database
+    public async Task UpdateBookAsync(Book book)
+    {
+        _context.Books.Update(book);
+        await _context.SaveChangesAsync();
+    }
+
+    // Deletes the book with the specified ID from the database
+    public async Task DeleteBookAsync(int id)
+    {
+        var book = await _context.Books.FindAsync(id);
+        if (book != null)
         {
-            return _books.FirstOrDefault(b => b.ISBN == isbn);
+            _context.Books.Remove(book);
+            await _context.SaveChangesAsync();
         }
     }
 }
