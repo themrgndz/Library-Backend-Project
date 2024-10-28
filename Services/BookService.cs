@@ -1,46 +1,69 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using UzmLibrary.Models;
 
 namespace UzmLibrary.Services
 {
-    public class BookService : IBookService
+    public class BookService
     {
-        private readonly IBookRepository _bookRepository;
+        private readonly LibraryContext _context;
 
-        public BookService(IBookRepository bookRepository)
+        public BookService(LibraryContext context)
         {
-            _bookRepository = bookRepository;
+            _context = context;
         }
 
-        // Retrieves all books using the repository
-        public async Task<IEnumerable<Book>> GetAllBooksAsync()
+        public async Task<List<BookDTO>> GetBooksAsync()
+    {
+        return await _context.Books
+            .Include(b => b.Author)
+            .Include(b => b.Publisher)
+            .Include(b => b.Category)
+            .Select(b => new BookDTO
+            {
+                BookId = b.BookId,
+                Title = b.Title,
+                AuthorName = b.Author.Name,
+                PublisherName = b.Publisher.Name,
+                CategoryName = b.Category.Name,
+                PublicationYear = b.PublicationYear,
+                PageCount = b.PageCount,
+                ISBN = b.ISBN,
+                Language = b.Language,
+                Stock = b.Stock,
+                ImageUrl = b.ImageUrl,
+                Description = b.Description
+            })
+            .ToListAsync();
+    }
+
+        public Book GetBookById(int id)
         {
-            return await _bookRepository.GetAllBooksAsync();
+            return _context.Books.Find(id);
         }
 
-        // Retrieves the book with the specified ID using the repository
-        public async Task<Book> GetBookByIdAsync(int id)
+        public void AddBook(Book book)
         {
-            return await _bookRepository.GetBookByIdAsync(id);
+            _context.Books.Add(book);
+            _context.SaveChanges();
         }
 
-        // Adds a new book using the repository
-        public async Task AddBookAsync(Book book)
+        public void UpdateBook(Book book)
         {
-            await _bookRepository.AddBookAsync(book);
+            _context.Books.Update(book);
+            _context.SaveChanges();
         }
 
-        // Updates an existing book using the repository
-        public async Task UpdateBookAsync(Book book)
+        public void DeleteBook(int id)
         {
-            await _bookRepository.UpdateBookAsync(book);
-        }
-
-        // Deletes the book with the specified ID using the repository
-        public async Task DeleteBookAsync(int id)
-        {
-            await _bookRepository.DeleteBookAsync(id);
+            var book = _context.Books.Find(id);
+            if (book != null)
+            {
+                _context.Books.Remove(book);
+                _context.SaveChanges();
+            }
         }
     }
 }

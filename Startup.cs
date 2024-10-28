@@ -20,7 +20,8 @@ namespace WebVize
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
+            // Sadece API için denetleyiciler ekliyoruz.
+            services.AddControllers();
 
             // CORS ayarlarını ekle
             services.AddCors(options =>
@@ -33,14 +34,12 @@ namespace WebVize
                 });
             });
 
+            // DbContext'i ekleyin
             services.AddDbContext<LibraryContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            // Repository ekle
-            services.AddScoped<IBookRepository, BookRepository>();
-
-            // Servis ekle
-            services.AddScoped<IBookService, BookService>(); // Bu satırı ekleyin
+            // BookService'i ekleyin
+            services.AddScoped<BookService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -54,18 +53,16 @@ namespace WebVize
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
             app.UseCors("AllowAllOrigins");
             app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Book}/{action=List}/{id?}");
-                
-                endpoints.MapControllers();
+                endpoints.MapControllers(); // Sadece API denetleyicilerini haritalayın
             });
         }
     }

@@ -18,46 +18,46 @@ namespace UzmLibrary.Models
         public DbSet<User> Users { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
 
-        // Model yapılandırması
+        // Fluent API kullanarak konfigürasyon
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Author ile Book arasındaki ilişki
+            // Author - Book ilişkisi
             modelBuilder.Entity<Author>()
                 .HasMany(a => a.Books)
                 .WithOne(b => b.Author)
                 .HasForeignKey(b => b.AuthorId);
 
-            // Publisher ile Book arasındaki ilişki
+            // Publisher - Book ilişkisi
             modelBuilder.Entity<Publisher>()
                 .HasMany(p => p.Books)
                 .WithOne(b => b.Publisher)
                 .HasForeignKey(b => b.PublisherId);
 
-            // Category ile Book arasındaki ilişki
+            // Category - Book ilişkisi
             modelBuilder.Entity<Category>()
                 .HasMany(c => c.Books)
                 .WithOne(b => b.Category)
                 .HasForeignKey(b => b.CategoryId);
 
-            // User ile Reservation arasındaki ilişki
+            // User - Reservation ilişkisi
             modelBuilder.Entity<User>()
                 .HasMany(u => u.Reservations)
                 .WithOne(r => r.User)
                 .HasForeignKey(r => r.UserID);
 
-            // Book ile Reservation arasındaki ilişki
+            // Book - Reservation ilişkisi
             modelBuilder.Entity<Book>()
                 .HasMany(b => b.Reservations)
                 .WithOne(r => r.Book)
                 .HasForeignKey(r => r.BookID);
 
-            // Role ile UserRole arasındaki ilişki
+            // Role - UserRole ilişkisi
             modelBuilder.Entity<Role>()
                 .HasMany(r => r.UserRoles)
                 .WithOne(ur => ur.Role)
                 .HasForeignKey(ur => ur.RoleID);
 
-            // User ile UserRole arasındaki ilişki
+            // User - UserRole ilişkisi
             modelBuilder.Entity<User>()
                 .HasMany(u => u.UserRoles)
                 .WithOne(ur => ur.User)
