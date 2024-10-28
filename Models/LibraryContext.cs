@@ -1,4 +1,3 @@
-using System;
 using Microsoft.EntityFrameworkCore;
 
 namespace UzmLibrary.Models
@@ -9,63 +8,60 @@ namespace UzmLibrary.Models
         {
         }
 
+        // DbSet tanımları
+        public DbSet<Author> Authors { get; set; }
+        public DbSet<Book> Books { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Publisher> Publishers { get; set; }
+        public DbSet<Reservation> Reservations { get; set; }
+        public DbSet<Role> Roles { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
-        public DbSet<Role> Roles { get; set; }
-        public DbSet<Reservation> Reservations { get; set; }
-        public DbSet<Book> Books { get; set; }
-        public DbSet<Author> Authors { get; set; }
-        public DbSet<Publisher> Publishers { get; set; }
-        public DbSet<Category> Categories { get; set; }
 
+        // Model yapılandırması
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
+            // Author ile Book arasındaki ilişki
+            modelBuilder.Entity<Author>()
+                .HasMany(a => a.Books)
+                .WithOne(b => b.Author)
+                .HasForeignKey(b => b.AuthorId);
 
-            // UserRole ile User ve Role arasında ilişkiler
-            modelBuilder.Entity<UserRole>()
-                .HasOne(ur => ur.User)
-                .WithMany(u => u.UserRoles)
-                .HasForeignKey(ur => ur.UserID)
-                .OnDelete(DeleteBehavior.Cascade);
+            // Publisher ile Book arasındaki ilişki
+            modelBuilder.Entity<Publisher>()
+                .HasMany(p => p.Books)
+                .WithOne(b => b.Publisher)
+                .HasForeignKey(b => b.PublisherId);
 
-            modelBuilder.Entity<UserRole>()
-                .HasOne(ur => ur.Role)
-                .WithMany(r => r.UserRoles)
-                .HasForeignKey(ur => ur.RoleID)
-                .OnDelete(DeleteBehavior.Cascade);
+            // Category ile Book arasındaki ilişki
+            modelBuilder.Entity<Category>()
+                .HasMany(c => c.Books)
+                .WithOne(b => b.Category)
+                .HasForeignKey(b => b.CategoryId);
 
-            // Reservation ile User ve Book arasındaki ilişkiler
-            modelBuilder.Entity<Reservation>()
-                .HasOne(r => r.User)
-                .WithMany(u => u.Reservations)
-                .HasForeignKey(r => r.UserID)
-                .OnDelete(DeleteBehavior.Restrict);
+            // User ile Reservation arasındaki ilişki
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Reservations)
+                .WithOne(r => r.User)
+                .HasForeignKey(r => r.UserID);
 
-            modelBuilder.Entity<Reservation>()
-                .HasOne(r => r.Book)
-                .WithMany(b => b.Reservations)
-                .HasForeignKey(r => r.BookID)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // Book ile Author, Publisher ve Category arasındaki ilişkiler
+            // Book ile Reservation arasındaki ilişki
             modelBuilder.Entity<Book>()
-                .HasOne(b => b.Author)
-                .WithMany(a => a.Books)
-                .HasForeignKey(b => b.AuthorId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .HasMany(b => b.Reservations)
+                .WithOne(r => r.Book)
+                .HasForeignKey(r => r.BookID);
 
-            modelBuilder.Entity<Book>()
-                .HasOne(b => b.Publisher)
-                .WithMany(p => p.Books)
-                .HasForeignKey(b => b.PublisherId)
-                .OnDelete(DeleteBehavior.SetNull);
+            // Role ile UserRole arasındaki ilişki
+            modelBuilder.Entity<Role>()
+                .HasMany(r => r.UserRoles)
+                .WithOne(ur => ur.Role)
+                .HasForeignKey(ur => ur.RoleID);
 
-            modelBuilder.Entity<Book>()
-                .HasOne(b => b.Category)
-                .WithMany(c => c.Books)
-                .HasForeignKey(b => b.CategoryId)
-                .OnDelete(DeleteBehavior.SetNull);
+            // User ile UserRole arasındaki ilişki
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.UserRoles)
+                .WithOne(ur => ur.User)
+                .HasForeignKey(ur => ur.UserID);
         }
     }
 }

@@ -16,6 +16,9 @@ namespace UzmLibrary.Models
 
         public DateTime ReservationDate { get; set; }
 
+        [Required(ErrorMessage = "Returned info is required")]
+        public bool Returned { get; set; }
+
         public DateTime? ReturnDate { get; set; }
 
         // Navigasyon özellikleri

@@ -12,8 +12,6 @@ namespace UzmLibrary.Models
         [StringLength(50, ErrorMessage = "Role name length can't exceed 50 characters")]
         public string RoleName { get; set; }
 
-        public string Description { get; set; }
-
         // Navigasyon özelliği
         public virtual ICollection<UserRole> UserRoles { get; set; } // UserRole ile ilişki
     }
