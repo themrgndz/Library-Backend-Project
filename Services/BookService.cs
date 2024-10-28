@@ -16,53 +16,73 @@ namespace UzmLibrary.Services
         }
 
         public async Task<List<BookDTO>> GetBooksAsync()
-    {
-        return await _context.Books
-            .Include(b => b.Author)
-            .Include(b => b.Publisher)
-            .Include(b => b.Category)
-            .Select(b => new BookDTO
-            {
-                BookId = b.BookId,
-                Title = b.Title,
-                AuthorName = b.Author.Name,
-                PublisherName = b.Publisher.Name,
-                CategoryName = b.Category.Name,
-                PublicationYear = b.PublicationYear,
-                PageCount = b.PageCount,
-                ISBN = b.ISBN,
-                Language = b.Language,
-                Stock = b.Stock,
-                ImageUrl = b.ImageUrl,
-                Description = b.Description
-            })
-            .ToListAsync();
-    }
-
-        public Book GetBookById(int id)
         {
-            return _context.Books.Find(id);
+            return await _context.Books
+                .Include(b => b.Author)
+                .Include(b => b.Publisher)
+                .Include(b => b.Category)
+                .Select(b => new BookDTO
+                {
+                    BookId = b.BookId,
+                    Title = b.Title,
+                    AuthorName = b.Author.Name,
+                    PublisherName = b.Publisher.Name,
+                    CategoryName = b.Category.Name,
+                    PublicationYear = b.PublicationYear,
+                    PageCount = b.PageCount,
+                    ISBN = b.ISBN,
+                    Language = b.Language,
+                    Stock = b.Stock,
+                    ImageUrl = b.ImageUrl,
+                    Description = b.Description
+                })
+                .ToListAsync();
         }
 
-        public void AddBook(Book book)
+        public async Task<BookDTO> GetBookByIdAsync(int id)
         {
-            _context.Books.Add(book);
-            _context.SaveChanges();
+            return await _context.Books
+                .Include(b => b.Author)
+                .Include(b => b.Publisher)
+                .Include(b => b.Category)
+                .Where(b => b.BookId == id)
+                .Select(b => new BookDTO
+                {
+                    BookId = b.BookId,
+                    Title = b.Title,
+                    AuthorName = b.Author.Name,
+                    PublisherName = b.Publisher.Name,
+                    CategoryName = b.Category.Name,
+                    PublicationYear = b.PublicationYear,
+                    PageCount = b.PageCount,
+                    ISBN = b.ISBN,
+                    Language = b.Language,
+                    Stock = b.Stock,
+                    ImageUrl = b.ImageUrl,
+                    Description = b.Description
+                })
+                .FirstOrDefaultAsync();
         }
 
-        public void UpdateBook(Book book)
+        public async Task AddBookAsync(Book book)
+        {
+            await _context.Books.AddAsync(book);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateBookAsync(Book book)
         {
             _context.Books.Update(book);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void DeleteBook(int id)
+        public async Task DeleteBookAsync(int id)
         {
-            var book = _context.Books.Find(id);
+            var book = await _context.Books.FindAsync(id);
             if (book != null)
             {
                 _context.Books.Remove(book);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
     }

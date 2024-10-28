@@ -25,9 +25,9 @@ namespace UzmLibrary.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Book> GetBook(int id)
+        public async Task<ActionResult<BookDTO>> GetBook(int id)
         {
-            var book = _bookService.GetBookById(id);
+            var book = await _bookService.GetBookByIdAsync(id);
             if (book == null)
             {
                 return NotFound();
@@ -36,31 +36,37 @@ namespace UzmLibrary.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Book> CreateBook([FromBody] Book book)
+        public async Task<ActionResult<BookDTO>> CreateBook([FromBody] Book book)
         {
             if (book == null)
             {
                 return BadRequest();
             }
-            _bookService.AddBook(book);
-            return CreatedAtAction(nameof(GetBook), new { id = book.BookId }, book);
+
+            await _bookService.AddBookAsync(book);
+
+            // Get the updated book data with all relational fields to return
+            var createdBook = await _bookService.GetBookByIdAsync(book.BookId);
+
+            return CreatedAtAction(nameof(GetBook), new { id = createdBook.BookId }, createdBook);
         }
 
         [HttpPut("{id}")]
-        public ActionResult UpdateBook(int id, [FromBody] Book book)
+        public async Task<ActionResult> UpdateBook(int id, [FromBody] Book book)
         {
             if (id != book.BookId)
             {
                 return BadRequest();
             }
-            _bookService.UpdateBook(book);
+
+            await _bookService.UpdateBookAsync(book);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public ActionResult DeleteBook(int id)
+        public async Task<ActionResult> DeleteBook(int id)
         {
-            _bookService.DeleteBook(id);
+            await _bookService.DeleteBookAsync(id);
             return NoContent();
         }
     }
