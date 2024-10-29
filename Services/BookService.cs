@@ -89,8 +89,41 @@ namespace UzmLibrary.Services
                 .ToListAsync();
         }
 
-        public async Task AddBookAsync(Book book)
+        public async Task AddBookAsync(BookDTO bookDto)
         {
+            var author = await _context.Authors.FirstOrDefaultAsync(a => a.Name == bookDto.AuthorName);
+            var publisher = await _context.Publishers.FirstOrDefaultAsync(p => p.Name == bookDto.PublisherName);
+            var category = await _context.Categories.FirstOrDefaultAsync(c => c.Name == bookDto.CategoryName);
+
+            // Author, Publisher ve Category yoksa oluştur
+            if (author == null) {
+                author = new Author { Name = bookDto.AuthorName };
+                await _context.Authors.AddAsync(author);
+            }
+            if (publisher == null) {
+                publisher = new Publisher { Name = bookDto.PublisherName };
+                await _context.Publishers.AddAsync(publisher);
+            }
+            if (category == null) {
+                category = new Category { Name = bookDto.CategoryName };
+                await _context.Categories.AddAsync(category);
+            }
+
+            var book = new Book
+            {
+                Title = bookDto.Title,
+                Author = author,
+                Publisher = publisher,
+                Category = category,
+                PublicationYear = bookDto.PublicationYear,
+                PageCount = bookDto.PageCount,
+                ISBN = bookDto.ISBN,
+                Language = bookDto.Language,
+                Stock = bookDto.Stock,
+                ImageUrl = bookDto.ImageUrl,
+                Description = bookDto.Description
+            };
+
             await _context.Books.AddAsync(book);
             await _context.SaveChangesAsync();
         }

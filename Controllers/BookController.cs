@@ -43,16 +43,30 @@ namespace UzmLibrary.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<BookDTO>> CreateBook([FromBody] Book book)
+        public async Task<ActionResult<BookDTO>> CreateBook([FromBody] BookDTO bookDto)
         {
-            if (book == null)
+            if (bookDto == null)
             {
                 return BadRequest();
             }
 
-            await _bookService.AddBookAsync(book);
+            // BookDTO'yu Book nesnesine dönüştür
+            var book = new Book
+            {
+                Title = bookDto.Title,
+                PublicationYear = bookDto.PublicationYear,
+                PageCount = bookDto.PageCount,
+                ISBN = bookDto.ISBN,
+                Language = bookDto.Language,
+                Stock = bookDto.Stock,
+                ImageUrl = bookDto.ImageUrl,
+                Description = bookDto.Description,
+            };
 
-            // Get the updated book data with all relational fields to return
+            // İlişkili Author, Publisher ve Category'yi ayarla
+            await _bookService.AddBookAsync(bookDto);
+
+            // Yeni oluşturulan kitabın tüm ilişkileriyle birlikte verilerini getir
             var createdBook = await _bookService.GetBookByIdAsync(book.BookId);
 
             return CreatedAtAction(nameof(GetBook), new { id = createdBook.BookId }, createdBook);
