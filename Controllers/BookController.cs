@@ -35,6 +35,13 @@ namespace UzmLibrary.Controllers
             return Ok(book);
         }
 
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<BookDTO>>> SearchBooks(string title)
+        {
+            var books = await _bookService.SearchBooksAsync(title);
+            return Ok(books);
+        }
+
         [HttpPost]
         public async Task<ActionResult<BookDTO>> CreateBook([FromBody] Book book)
         {

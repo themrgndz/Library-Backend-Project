@@ -26,13 +26,7 @@ namespace UzmLibrary.Services
                     UserId = u.UserId,
                     Username = u.Username,
                     Email = u.Email,
-                    Roles = u.UserRoles
-                        .Select(ur => new RoleDTO
-                        {
-                            RoleId = ur.Role.RoleID,
-                            RoleName = ur.Role.RoleName
-                        })
-                        .ToList()
+                    Role = u.UserRoles.Select(ur => ur.Role.RoleName).FirstOrDefault() // İlk rolün adını al
                 })
                 .ToListAsync();
         }
@@ -52,14 +46,27 @@ namespace UzmLibrary.Services
                 UserId = user.UserId,
                 Username = user.Username,
                 Email = user.Email,
-                Roles = user.UserRoles
-                    .Select(ur => new RoleDTO
-                    {
-                        RoleId = ur.Role.RoleID,
-                        RoleName = ur.Role.RoleName
-                    })
-                    .ToList()
+                Role = user.UserRoles.Select(ur => ur.Role.RoleName).FirstOrDefault() // İlk rolün adını al
             };
+        }
+
+        // Kullanıcı adı ve şifre kontrolü
+        public async Task<UserDTO> AuthenticateUserAsync(string username, string password)
+        {
+            var user = await _context.Users
+                .Where(u => u.Username == username && u.Password == password)
+                .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+                .Select(u => new UserDTO 
+                {
+                    UserId = u.UserId,
+                    Username = u.Username,
+                    Email = u.Email,
+                    Role = u.UserRoles.Select(ur => ur.Role.RoleName).FirstOrDefault() // İlk rolün adını al
+                })
+                .FirstOrDefaultAsync();
+
+            return user;
         }
 
         // Yeni kullanıcı ekleme

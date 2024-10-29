@@ -35,6 +35,25 @@ namespace UzmLibrary.Controllers
             return Ok(user);
         }
 
+        [HttpPost("login")]
+        public async Task<ActionResult<UserDTO>> Login([FromBody] LoginRequest loginRequest)
+        {
+            if (string.IsNullOrEmpty(loginRequest.Username) || string.IsNullOrEmpty(loginRequest.Password))
+            {
+                return BadRequest("Kullanıcı adı ve şifre gereklidir.");
+            }
+
+            var user = await _userService.AuthenticateUserAsync(loginRequest.Username, loginRequest.Password);
+
+            if (user == null)
+            {
+                return Unauthorized("Geçersiz kullanıcı adı veya şifre.");
+            }
+
+            return Ok(user);
+        }
+
+
         [HttpPost]
         public async Task<ActionResult<UserDTO>> CreateUser([FromBody] User user)
         {
