@@ -19,11 +19,5 @@ namespace UzmLibrary.Models
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress(ErrorMessage = "Invalid email format")]
         public string Email { get; set; }
-
-        // Kullanıcının sahip olduğu rezervasyonlar
-        public virtual ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
-
-        // Kullanıcının rollerini tutan koleksiyon
-        public virtual ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
     }
 }

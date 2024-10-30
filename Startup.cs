@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using UzmLibrary.Data;
 using UzmLibrary.Models;
 using UzmLibrary.Services;
 
@@ -40,7 +41,6 @@ namespace WebVize
 
             // BookService'i ekleyin
             services.AddScoped<BookService>();
-            services.AddScoped<UserService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

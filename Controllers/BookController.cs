@@ -17,15 +17,17 @@ namespace UzmLibrary.Controllers
             _bookService = bookService;
         }
 
+        // GET: api/book
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<BookDTO>>> GetBooks()
+        public async Task<ActionResult<List<Book>>> GetAllBooks()
         {
-            var books = await _bookService.GetBooksAsync();
+            var books = await _bookService.GetAllBooksAsync();
             return Ok(books);
         }
 
+        // GET: api/book/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<BookDTO>> GetBook(int id)
+        public async Task<ActionResult<Book>> GetBookById(int id)
         {
             var book = await _bookService.GetBookByIdAsync(id);
             if (book == null)
@@ -35,59 +37,55 @@ namespace UzmLibrary.Controllers
             return Ok(book);
         }
 
+        // GET: api/book/search?search={searchTerm}
         [HttpGet("search")]
-        public async Task<ActionResult<IEnumerable<BookDTO>>> SearchBooks(string title)
+        public async Task<ActionResult<List<Book>>> SearchBooks(string search)
         {
-            var books = await _bookService.SearchBooksAsync(title);
+            var books = await _bookService.SearchBooksAsync(search);
             return Ok(books);
         }
 
+        // POST: api/book
         [HttpPost]
-        public async Task<ActionResult<BookDTO>> CreateBook([FromBody] BookDTO bookDto)
+        public async Task<ActionResult<Book>> AddBook([FromBody] Book book)
         {
-            if (bookDto == null)
+            if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
-            // BookDTO'yu Book nesnesine dönüştür
-            var book = new Book
-            {
-                Title = bookDto.Title,
-                PublicationYear = bookDto.PublicationYear,
-                PageCount = bookDto.PageCount,
-                ISBN = bookDto.ISBN,
-                Language = bookDto.Language,
-                Stock = bookDto.Stock,
-                ImageUrl = bookDto.ImageUrl,
-                Description = bookDto.Description,
-            };
-
-            // İlişkili Author, Publisher ve Category'yi ayarla
-            await _bookService.AddBookAsync(bookDto);
-
-            // Yeni oluşturulan kitabın tüm ilişkileriyle birlikte verilerini getir
-            var createdBook = await _bookService.GetBookByIdAsync(book.BookId);
-
-            return CreatedAtAction(nameof(GetBook), new { id = createdBook.BookId }, createdBook);
+            var createdBook = await _bookService.AddBookAsync(book);
+            return CreatedAtAction(nameof(GetBookById), new { id = createdBook.BookId }, createdBook);
         }
 
+        // PUT: api/book/{id}
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateBook(int id, [FromBody] Book book)
+        public async Task<ActionResult<Book>> UpdateBook(int id, [FromBody] Book updatedBook)
         {
-            if (id != book.BookId)
+            if (id != updatedBook.BookId)
             {
                 return BadRequest();
             }
 
-            await _bookService.UpdateBookAsync(book);
-            return NoContent();
+            var book = await _bookService.UpdateBookAsync(id, updatedBook);
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(book);
         }
 
+        // DELETE: api/book/{id}
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteBook(int id)
+        public async Task<IActionResult> DeleteBook(int id)
         {
-            await _bookService.DeleteBookAsync(id);
+            var deleted = await _bookService.DeleteBookAsync(id);
+            if (!deleted)
+            {
+                return NotFound();
+            }
+
             return NoContent();
         }
     }
