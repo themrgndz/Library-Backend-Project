@@ -1,13 +1,9 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 
 namespace UzmLibrary.Models
 {
-    public class Book
+    public class BookDto
     {
-        [Key]
         public int BookId { get; set; }
 
         [Required(ErrorMessage = "Title is required")]
@@ -39,8 +35,5 @@ namespace UzmLibrary.Models
 
         [StringLength(1000, ErrorMessage = "Description can't exceed 1000 characters")]
         public string Description { get; set; }
-
-        [JsonIgnore]
-        public ICollection<Borrow> Borrows { get; set; } = new List<Borrow>();
     }
 }

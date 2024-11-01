@@ -41,6 +41,7 @@ namespace WebVize
 
             // BookService'i ekleyin
             services.AddScoped<BookService>();
+            services.AddScoped<UserService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
