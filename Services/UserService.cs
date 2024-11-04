@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,7 +26,13 @@ namespace UzmLibrary.Services
                 Email = u.Email
             }).ToListAsync();
         }
-
+        public async Task<List<UserDTO>> SearchUsersByNameAsync(string username)
+        {
+            return await _context.Users
+                .Where(u => u.Username.Contains(username))
+                .Select(u => new UserDTO { UserId = u.UserId, Username = u.Username, Email = u.Email })
+                .ToListAsync();
+        }
         public async Task<UserDTO> GetUserByIdAsync(int userId)
         {
             var user = await _context.Users.FindAsync(userId);

@@ -36,7 +36,13 @@ namespace UzmLibrary.Controllers
             }
             return Ok(user);
         }
-
+        // GET: api/user/search?username={username}
+        [HttpGet("search")]
+        public async Task<ActionResult<List<UserDTO>>> SearchUsersByName([FromQuery] string username)
+        {
+            var users = await _userService.SearchUsersByNameAsync(username);
+            return Ok(users);
+        }
         // POST: api/user
         [HttpPost]
         public async Task<ActionResult<UserDTO>> CreateUser([FromBody] UserDTO userDto)
