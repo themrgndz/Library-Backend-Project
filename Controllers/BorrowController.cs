@@ -39,6 +39,25 @@ namespace UzmLibrary.Controllers
             return Ok(borrow);
         }
 
+        // GET: api/borrow/user/{userId}
+        [HttpGet("user/{userId}")]
+        public ActionResult<IEnumerable<Borrow>> GetBorrowsByUserId(int userId)
+        {
+            var borrows = _context.Borrows
+                .Include(b => b.User) 
+                .Include(b => b.Book) 
+                .Where(b => b.UserId == userId)
+                .ToList();
+
+            if (!borrows.Any())
+            {
+                return NotFound("No borrows found for this user.");
+            }
+
+            return Ok(borrows);
+        }
+
+
         // POST: api/borrow
         [HttpPost]
         public async Task<ActionResult<Borrow>> PostBorrow(Borrow borrow)
