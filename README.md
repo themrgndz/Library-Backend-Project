@@ -1,0 +1,21 @@
+- Books
+    - GetAllBooks - List all books
+    - GetBookById - Get book information by ID
+    - SearchBooks - List books based on search term
+    - AddBook - Add a new book
+    - UpdateBook - Update an existing book
+    - DeleteBook - Delete a book
+- Users
+    - GetAllUsers - List all users
+    - GetUserById - Get user information by ID
+    - SearchUsersByName - Search users by username
+    - CreateUser - Create a new user
+    - UpdateUser - Update an existing user
+    - DeleteUser - Delete a user
+- Borrows
+    - GetBorrows - List all borrow records
+    - GetBorrow - Get borrow record by ID
+    - GetBorrowsByUserId - Get borrow records by user ID
+    - PostBorrow - Create a new borrow record
+    - PutBorrow - Update an existing borrow record
+    - DeleteBorrow - Delete a borrow record
